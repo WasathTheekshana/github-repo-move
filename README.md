@@ -29,7 +29,11 @@ git fetch origin
 Create local tracting branches for remote repo
 ```bash
 for branch in $(git branch -r | grep 'origin/' | grep -v 'origin/HEAD' | sed 's/origin\///'); do
-    git checkout -b "$branch" "origin/$branch"
+    if git show-ref --verify --quiet "refs/heads/$branch"; then
+        echo "Branch '$branch' already exists locally, skipping."
+    else
+        git checkout -b "$branch" "origin/$branch" || echo "Failed to create branch '$branch'"
+    fi
 done
 ```
 
